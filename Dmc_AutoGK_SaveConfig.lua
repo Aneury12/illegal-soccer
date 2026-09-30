@@ -1,4 +1,3 @@
-```
 -- Small, dependency-free startup controller. Game modules are loaded only after
 -- its status panel is visible. No executor-specific GUI or identity API is needed.
 local function createDmcStartup(d)
@@ -8179,17 +8178,18 @@ do
     if oldGui then oldGui:Destroy() end
 
     local C = {
-        background = Color3.fromRGB(16, 16, 15),
-        surface = Color3.fromRGB(23, 23, 21),
-        control = Color3.fromRGB(29, 29, 26),
-        hover = Color3.fromRGB(39, 37, 30),
-        pressed = Color3.fromRGB(53, 47, 32),
-        stroke = Color3.fromRGB(49, 47, 39),
-        text = Color3.fromRGB(233, 231, 220),
-        muted = Color3.fromRGB(145, 144, 131),
-        accent = Color3.fromRGB(222, 193, 115),
-        accentDim = Color3.fromRGB(131, 111, 61),
-        active = Color3.fromRGB(43, 39, 27),
+        background = Color3.fromRGB(12, 13, 16),
+        surface = Color3.fromRGB(20, 22, 27),
+        surfaceAlt = Color3.fromRGB(24, 26, 32),
+        control = Color3.fromRGB(29, 32, 39),
+        hover = Color3.fromRGB(38, 42, 51),
+        pressed = Color3.fromRGB(49, 53, 64),
+        stroke = Color3.fromRGB(52, 56, 66),
+        text = Color3.fromRGB(239, 241, 245),
+        muted = Color3.fromRGB(151, 157, 169),
+        accent = Color3.fromRGB(105, 183, 255),
+        accentDim = Color3.fromRGB(58, 105, 150),
+        active = Color3.fromRGB(28, 48, 67),
     }
 
     local function create(class, properties, parent)
@@ -8255,45 +8255,65 @@ do
         Size = UDim2.fromOffset(0, 0), BackgroundTransparency = 1,
         BorderSizePixel = 0,
     }, Gui)
-    local panel = round(frame(host, "Panel", 0, 0, 316, 494, C.background), 9)
+    local panel = round(frame(host, "Panel", 0, 0, 316, 494, C.background), 10)
     panel.Active = true
-    stroke(panel, C.accentDim)
+    stroke(panel, C.stroke, 1)
     local uiScale = create("UIScale", { Scale = 1 }, panel)
-    local header = frame(panel, "DragHandle", 12, 0, 224, 40)
+
+    local accentBar = round(frame(panel, "AccentBar", 0, 0, 316, 3, C.accent), 2)
+
+    local header = frame(panel, "DragHandle", 12, 4, 292, 38)
     header.BackgroundTransparency = 1
     header.Active = true
-    text(header, "Dmc", 13, {
-        Name = "PageTitle", Size = UDim2.fromScale(1, 1),
-        Font = Enum.Font.GothamBold,
+    text(header, "Dmc", 15, {
+        Name = "PageTitle", Position = UDim2.fromOffset(0, 0),
+        Size = UDim2.fromOffset(100, 22),
+        Font = Enum.Font.GothamBold, TextColor3 = C.text,
     })
+    text(header, "AUTO GK  •  CONTROL PANEL", 8, {
+        Name = "Subtitle", Position = UDim2.fromOffset(1, 22),
+        Size = UDim2.fromOffset(180, 12),
+        Font = Enum.Font.GothamMedium, TextColor3 = C.muted,
+    })
+    text(header, BUILD, 7, {
+        Name = "Build", Position = UDim2.fromOffset(184, 22),
+        Size = UDim2.fromOffset(100, 12),
+        Font = Enum.Font.GothamMedium, TextColor3 = C.muted,
+        TextXAlignment = Enum.TextXAlignment.Right,
+        TextTruncate = Enum.TextTruncate.AtEnd,
+    })
+
     local minimize = button(panel, {
-        Name = "Minimize", Text = "-", TextSize = 18,
-        Position = UDim2.new(1, -68, 0, 8), Size = UDim2.fromOffset(24, 24),
+        Name = "Minimize", Text = "—", TextSize = 14,
+        Position = UDim2.new(1, -88, 0, 10), Size = UDim2.fromOffset(24, 24),
     })
     local save = button(panel, {
-        Name = "SaveConfig", Text = "Save", TextSize = 10,
-        Position = UDim2.new(1, -116, 0, 8), Size = UDim2.fromOffset(40, 24),
+        Name = "SaveConfig", Text = "SAVE", TextSize = 9,
+        Position = UDim2.new(1, -140, 0, 10), Size = UDim2.fromOffset(44, 24),
+        BackgroundColor3 = C.active,
     })
+    stroke(save, C.accentDim)
     local unload = button(panel, {
-        Name = "Unload", Text = "x", TextSize = 12,
-        Position = UDim2.new(1, -36, 0, 8), Size = UDim2.fromOffset(24, 24),
+        Name = "Unload", Text = "×", TextSize = 14,
+        Position = UDim2.new(1, -40, 0, 10), Size = UDim2.fromOffset(24, 24),
     })
-    local tabBar = frame(panel, "Tabs", 12, 44, 292, 26)
+    local tabBar = frame(panel, "Tabs", 12, 48, 292, 30)
     tabBar.BackgroundTransparency = 1
     -- STR is independent of the goalkeeper automation toggle.
-    local strikerContent = frame(panel, "STRContent", 12, 76, 292, 458)
+    local strikerContent = frame(panel, "STRContent", 12, 82, 292, 458)
     strikerContent.BackgroundTransparency = 1
     strikerContent.Visible = false
-    local live = round(frame(panel, "LiveStatus", 12, 76, 292, 28, C.surface), 5)
+    local live = round(frame(panel, "LiveStatus", 12, 82, 292, 30, C.surfaceAlt), 6)
     local dot = round(frame(live, "StatusDot", 10, 11, 6, 6, C.muted), 3)
     local stateText = text(live, "STARTING", 10, {
         Name = "Status", Position = UDim2.fromOffset(24, 0),
         Size = UDim2.new(1, -34, 1, 0), TextTruncate = Enum.TextTruncate.AtEnd,
+        Font = Enum.Font.GothamMedium, TextColor3 = C.text,
     })
     -- GK retains its existing controls in one scroll surface below the tabs.
     local content = create("ScrollingFrame", {
-        Name = "MainContent", Position = UDim2.fromOffset(12, 114),
-        Size = UDim2.fromOffset(292, 368), BackgroundTransparency = 1,
+        Name = "MainContent", Position = UDim2.fromOffset(12, 118),
+        Size = UDim2.fromOffset(292, 364), BackgroundTransparency = 1,
         BorderSizePixel = 0, ClipsDescendants = true,
         ScrollingDirection = Enum.ScrollingDirection.Y,
         ScrollBarThickness = 2, ScrollBarImageColor3 = C.accentDim,
@@ -8416,7 +8436,10 @@ do
     local function section(name)
         local card = frame(content, name, 0, 0, 0, 22)
         card.Size = UDim2.new(1, -4, 0, 22)
-        card.BackgroundTransparency = 1
+        card.BackgroundColor3 = C.surface
+        card.BackgroundTransparency = 0.05
+        round(card, 7)
+        stroke(card, C.stroke)
         card.AutomaticSize = Enum.AutomaticSize.Y
         card.LayoutOrder = name == "AUTOMATION" and 1 or 2
         text(card, name, 9, {
@@ -8436,7 +8459,8 @@ do
     local function toggle(label, getter, setter)
         order = order + 1
         local control = button(activeBody, {
-            Name = label, Size = UDim2.new(1, 0, 0, 32), LayoutOrder = order,
+            Name = label, Size = UDim2.new(1, 0, 0, 34), LayoutOrder = order,
+            BackgroundColor3 = C.control,
         })
         text(control, label, 11, {
             Position = UDim2.fromOffset(12, 0), Size = UDim2.new(1, -82, 1, 0),
@@ -8584,7 +8608,7 @@ do
     section("AUTOMATION")
 
     toggle(
-        "Auto save",
+        "Auto GK",
         function()
             return ENV.AUTO_GK_ENABLED
         end,
@@ -9211,4 +9235,3 @@ print("[Auto GK] Loaded | RightShift: show / hide")
 
 -- DMC MAIN END
 end)
-```
